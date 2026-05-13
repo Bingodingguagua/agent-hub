@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业级智能体平台 — Demo</title>
+<style>
+:root {
+  --bg: #f1f5f9;
+  --surface: #fff;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+  --success: #16a34a;
+  --success-bg: #f0fdf4;
+  --warning: #d97706;
+  --warning-bg: #fffbeb;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --transition: 0.2s ease;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6; font-size: 14px;
+}
+
+/* ── Header / Nav ─────────────── */
+.app-header {
+  background: #fff; border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 56px; display: flex; align-items: center;
+  justify-content: space-between; position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow);
+}
+.app-header .logo { font-size: 18px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+.app-header .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+.nav-tabs { display: flex; gap: 0; }
+.nav-tab {
+  padding: 16px 20px; font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: var(--transition); white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text); background: #f8fafc; }
+.nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.user-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+.role-switch { display: flex; align-items: center; gap: 8px; margin-right: 12px; }
+.role-badge {
+  font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 99px;
+  background: #dbeafe; color: #1d4ed8; cursor: pointer; transition: var(--transition);
+}
+.role-badge.admin { background: #fef3c7; color: #b45309; }
+
+/* ── Page shell ─────────────── */
+.page-content { max-width: 1200px; margin: 0 auto; padding: 24px 24px 60px; }
+.page-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: #0f172a; }
+.subtitle { font-size: 13px; color: var(--text-secondary); margin: -16px 0 20px; }
+
+/* ── Search bar ─────────────── */
+.toolbar {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+}
+.search-box {
+  flex: 1; min-width: 200px; max-width: 360px; position: relative;
+}
+.search-box input {
+  width: 100%; padding: 9px 12px 9px 36px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 14px; outline: none; transition: var(--transition);
+  background: var(--surface);
+}
+.search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.search-box .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px; }
+.filter-select {
+  padding: 9px 32px 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; background: var(--surface); cursor: pointer; outline: none;
+  appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+
+/* ── Cards ─────────────── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow); transition: var(--transition); cursor: pointer;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.card-title { font-size: 16px; font-weight: 600; }
+.card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; flex: 1; }
+.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.card-time { font-size: 12px; color: #94a3b8; }
+.card .skill-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.skill-tag {
+  font-size: 11px; padding: 2px 8px; border-radius: 4px;
+  background: #f1f5f9; color: #475569; font-weight: 500;
+}
+
+/* ── Status badges ─────────────── */
+.status {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px;
+  border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; }
+.status.review  { background: #dbeafe; color: #1d4ed8; } .status.review .status-dot  { background: #3b82f6; }
+.status.passed  { background: #d1fae5; color: #065f46; } .status.passed .status-dot  { background: #10b981; }
+.status.rejected{ background: #fee2e2; color: #991b1b; } .status.rejected .status-dot{ background: #ef4444; }
+.status.running { background: #dcfce7; color: #166534; } .status.running .status-dot { background: #22c55e; }
+.status.stopped { background: #f3f4f6; color: #6b7280; } .status.stopped .status-dot { background: #9ca3af; }
+
+/* ── Toggle switch ─────────────── */
+.toggle {
+  width: 44px; height: 24px; border-radius: 12px; background: #d1d5db;
+  cursor: pointer; position: relative; transition: var(--transition); border: none; outline: none;
+}
+.toggle.on { background: var(--success); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+  border-radius: 50%; background: #fff; transition: var(--transition); box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+.toggle.on::after { left: 22px; }
+
+/* ── Buttons ─────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: var(--transition);
+  white-space: nowrap; text-decoration: none;
+}
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-outline { background: #fff; color: var(--text); border-color: var(--border); }
+.btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+.btn-danger { background: #fff; color: var(--danger); border-color: var(--danger); }
+.btn-danger:hover { background: var(--danger-bg); }
+.btn-sm { padding: 4px 12px; font-size: 13px; }
+.btn-lg { padding: 10px 24px; font-size: 15px; }
+
+/* ── Tables ─────────────── */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f8fafc; font-weight: 600; font-size: 13px; color: #475569; text-align: left; padding: 12px 14px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8fafc; }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 16px; font-size: 13px; color: var(--text-secondary); }
+.pagination button { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; cursor: pointer; font-size: 13px; transition: var(--transition); }
+.pagination button:hover { background: #f1f5f9; }
+.pagination button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ── Drawer (right panel) ─────────────── */
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 200; opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100vw;
+  background: #fff; z-index: 201; box-shadow: -4px 0 24px rgba(0,0,0,.12);
+  transform: translateX(100%); transition: transform .3s ease;
+  display: flex; flex-direction: column;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.drawer-header h3 { font-size: 16px; font-weight: 600; }
+.drawer-close { width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: none; cursor: pointer; font-size: 18px; color: #64748b; display: flex; align-items: center; justify-content: center; }
+.drawer-close:hover { background: #f1f5f9; }
+.drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+.drawer-section { margin-bottom: 20px; }
+.drawer-section h4 { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.drawer-info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+.drawer-info-row .label { color: var(--text-secondary); }
+.drawer-info-row .value { font-weight: 500; }
+
+/* ── Stats cards ─────────────── */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px 24px; box-shadow: var(--shadow);
+}
+.stat-card .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.stat-card .stat-value { font-size: 30px; font-weight: 700; }
+
+/* ── Detail page ─────────────── */
+.detail-block {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow);
+}
+.detail-block h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.detail-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.detail-actions { display: flex; gap: 8px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.detail-item { padding: 6px 0; }
+.detail-item .dlabel { font-size: 12px; color: var(--text-secondary); }
+.detail-item .dvalue { font-size: 14px; font-weight: 500; }
+.stat-mini-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.stat-mini {
+  background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 16px; text-align: center;
+}
+.stat-mini .sval { font-size: 24px; font-weight: 700; color: #1e293b; }
+.stat-mini .slbl { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ── Form ─────────────── */
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.form-group label .required { color: var(--danger); }
+.form-group input, .form-group textarea {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; font-family: inherit; outline: none; transition: var(--transition);
+}
+.form-group input:focus, .form-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-group .hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+.template-preview {
+  background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 16px; display: flex; gap: 12px; align-items: flex-start;
+}
+.template-preview .tp-icon { font-size: 28px; }
+.template-preview .tp-name { font-weight: 600; }
+.template-preview .tp-desc { font-size: 13px; color: var(--text-secondary); }
+.field-error { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
+
+/* ── Progress bar ─────────────── */
+.progress-bar {
+  height: 6px; border-radius: 3px; background: #e5e7eb; overflow: hidden; margin-top: 2px;
+}
+.progress-bar .fill { height: 100%; border-radius: 3px; transition: width .3s; }
+.fill.normal { background: var(--success); }
+.fill.warn { background: var(--warning); }
+.fill.danger { background: var(--danger); }
+
+/* ── Trend ─────────────── */
+.trend-up { color: #dc2626; }
+.trend-down { color: #16a34a; }
+.trend-flat { color: #6b7280; }
+
+/* ── Misc ─────────────── */
+.back-link { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--text-secondary); cursor: pointer; border: none; background: none; margin-bottom: 16px; text-decoration: none; }
+.back-link:hover { color: var(--text); }
+.section-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text-secondary); }
+.empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+.toast {
+  position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 500;
+  padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+  box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.toast.show { opacity: 1; }
+.toast.success { background: #16a34a; color: #fff; }
+.toast.error { background: #dc2626; color: #fff; }
+.toast.warning { background: #d97706; color: #fff; }
+
+.breadcrumb { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+.breadcrumb span { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="app-header">
+  <div style="display:flex;align-items:center;gap:32px;">
+    <div class="logo"><span class="dot"></span>企业级智能体平台</div>
+    <nav class="nav-tabs" id="navTabs"></nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="role-switch">
+      <span style="font-size:12px;color:#64748b;">当前视角</span>
+      <span class="role-badge" id="roleBadge" onclick="toggleRole()" title="点击切换角色">普通用户</span>
+    </div>
+    <div class="user-avatar" id="userAvatar">张</div>
+    <span id="userName" style="font-size:13px;color:#475569;">张三</span>
+  </div>
+</header>
+
+<!-- ═══════════════════ TOAST ═══════════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+<main class="page-content" id="mainContent"></main>
+
+<!-- ═══════════════════ DRAWER ═══════════════════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer"></div>
+
+<script>
+// ── State ──────────────────
+const ROLE_USER = 'user';
+const ROLE_ADMIN = 'admin';
+let currentRole = ROLE_USER;
+let currentPage = '';
+
+// ── Mock data ──────────────────
+const templates = [
+  { id:'T001', name:'智能助手模板', desc:'基于GPT-4的通用对话助手，支持多轮对话、知识库检索、多语言交互', category:'对话', skills:['对话','搜索'], status:'enabled', createdAt:'2026-05-08' },
+  { id:'T002', name:'代码审查模板', desc:'自动审查代码质量与安全漏洞，支持主流编程语言，生成审查报告', category:'开发', skills:['审查','分析'], status:'enabled', createdAt:'2026-05-06' },
+  { id:'T003', name:'数据分析模板', desc:'自动分析业务数据，生成可视化报表，支持多数据源接入', category:'数据', skills:['分析','图表'], status:'enabled', createdAt:'2026-05-01' },
+  { id:'T004', name:'文档撰写模板', desc:'辅助撰写技术文档、周报、需求说明，支持多种文档类型', category:'办公', skills:['写作'], status:'enabled', createdAt:'2026-04-28' },
+  { id:'T005', name:'客服对话模板', desc:'智能客服对话机器人，支持FAQ匹配、情绪识别、人工转接', category:'对话', skills:['对话','情绪分析'], status:'enabled', createdAt:'2026-04-20' },
+  { id:'T006', name:'翻译助手模板', desc:'多语种实时翻译，支持中/英/日/韩/法/德等主流语言', category:'办公', skills:['翻译'], status:'disabled', createdAt:'2026-04-15' },
+  { id:'T007', name:'测试生成模板', desc:'根据代码自动生成单元测试用例，支持Jest/Pytest/JUnit', category:'开发', skills:['测试','分析'], status:'enabled', createdAt:'2026-04-10' },
+  { id:'T008', name:'SQL生成模板', desc:'自然语言转SQL查询，支持MySQL/PostgreSQL/BigQuery', category:'数据', skills:['SQL','分析'], status:'enabled', createdAt:'2026-04-05' },
+];
+
+const instances = [
+  { id:'A001', name:'智能助手-Pro', userId:'zhangsan', userName:'张三', template:'智能助手模板', env:'生产', status:'running', skills:['对话','搜索'], desc:'基于GPT-4的智能对话助手，支持多轮对话、上下文记忆、知识库检索，适用于日常办公场景的智能问答与辅助。', createdAt:'2026-05-10 14:30', updatedAt:'2026-05-12 09:15', cpu:42, mem:512, inputToken:45230, outputToken:38910, totalToken:84140, reviewComment:'' },
+  { id:'A002', name:'代码审查助手', userId:'lisi', userName:'李四', template:'代码审查模板', env:'测试', status:'running', skills:['审查','分析'], desc:'自动审查提交代码，检测安全漏洞和代码规范问题。', createdAt:'2026-05-09 10:00', updatedAt:'2026-05-12 08:30', cpu:68, mem:890, inputToken:12000, outputToken:8500, totalToken:20500, reviewComment:'' },
+  { id:'A003', name:'数据分析助手', userId:'wangwu', userName:'王五', template:'数据分析模板', env:'生产', status:'stopped', skills:['分析','图表'], desc:'自动分析业务数据生成可视化报表。', createdAt:'2026-05-05 09:00', updatedAt:'2026-05-10 16:00', cpu:0, mem:0, inputToken:2800, outputToken:4500, totalToken:7300, reviewComment:'' },
+  { id:'A004', name:'文档撰写助手', userId:'zhaoliu', userName:'赵六', template:'智能助手模板', env:'开发', status:'running', skills:['写作'], desc:'辅助撰写技术文档与周报。', createdAt:'2026-05-01 11:00', updatedAt:'2026-05-12 07:00', cpu:89, mem:1638, inputToken:8000, outputToken:6000, totalToken:14000, reviewComment:'' },
+  { id:'A005', name:'客服机器人', userId:'zhangsan', userName:'张三', template:'客服对话模板', env:'生产', status:'review', skills:['对话','情绪分析'], desc:'智能客服对话机器人，用于官网在线客服场景。', createdAt:'2026-05-12 10:00', updatedAt:'2026-05-12 10:00', cpu:0, mem:0, inputToken:0, outputToken:0, totalToken:0, reviewComment:'' },
+  { id:'A006', name:'SQL查询助手', userId:'lisi', userName:'李四', template:'SQL生成模板', env:'生产', status:'passed', skills:['SQL','分析'], desc:'自然语言转SQL，连接公司BigQuery数据仓库。', createdAt:'2026-05-11 15:00', updatedAt:'2026-05-12 11:00', cpu:0, mem:0, inputToken:0, outputToken:0, totalToken:0, reviewComment:'' },
+  { id:'A007', name:'翻译小助手', userId:'wangwu', userName:'王五', template:'翻译助手模板', env:'测试', status:'rejected', skills:['翻译'], desc:'文档翻译工具。', createdAt:'2026-05-08 09:00', updatedAt:'2026-05-09 14:00', cpu:0, mem:0, inputToken:0, outputToken:0, totalToken:0, reviewComment:'您的实例用途描述不够清晰，请补充具体使用场景后重新提交。' },
+];
+
+const users = [
+  { username:'张三', dept:'技术部', role:'管理员角色' },
+  { username:'李四', dept:'技术部', role:'普通用户角色' },
+  { username:'王五', dept:'产品部', role:'普通用户角色' },
+  { username:'赵六', dept:'运营部', role:'普通用户角色' },
+  { username:'钱七', dept:'技术部', role:'普通用户角色' },
+  { username:'孙八', dept:'产品部', role:'普通用户角色' },
+  { username:'周九', dept:'运营部', role:'普通用户角色' },
+  { username:'吴十', dept:'技术部', role:'普通用户角色' },
+  { username:'郑一', dept:'技术部', role:'普通用户角色' },
+  { username:'冯二', dept:'产品部', role:'普通用户角色' },
+];
+
+const tokenData = [
+  { id:'prod-ns1-agent-smart-pro', inputToken:12450, outputToken:8320, totalToken:20770, trend:'up', trendPct:'+12%' },
+  { id:'test-ns2-agent-code-review', inputToken:5200, outputToken:3100, totalToken:8300, trend:'down', trendPct:'-3%' },
+  { id:'prod-ns1-agent-data-analyze', inputToken:2800, outputToken:4500, totalToken:7300, trend:'flat', trendPct:'持平' },
+  { id:'dev-ns3-agent-doc-writer', inputToken:6600, outputToken:5100, totalToken:11700, trend:'up', trendPct:'+8%' },
+  { id:'prod-ns1-agent-cs-bot', inputToken:3200, outputToken:2800, totalToken:6000, trend:'down', trendPct:'-5%' },
+];
+
+const resourceData = [
+  { id:'prod-ns1-agent-smart-pro', cpu:42, cpuCore:'0.8/2 Core', mem:512, memTotal:'/ 2GB', status:'normal' },
+  { id:'test-ns2-agent-code-review', cpu:68, cpuCore:'1.4/2 Core', mem:890, memTotal:'/ 2GB', status:'normal' },
+  { id:'prod-ns1-agent-data-analyze', cpu:89, cpuCore:'1.8/2 Core', mem:1638, memTotal:'/ 2GB', status:'warn' },
+  { id:'dev-ns3-agent-doc-writer', cpu:35, cpuCore:'0.7/2 Core', mem:420, memTotal:'/ 2GB', status:'normal' },
+  { id:'prod-ns1-agent-cs-bot', cpu:91, cpuCore:'1.82/2 Core', mem:1800, memTotal:'/ 2GB', status:'warn' },
+];
+
+// ── Navigation ──────────────────
+const userNav = [
+  { id:'template-market', label:'模板市场', icon:'📦' },
+  { id:'my-instances', label:'我的实例', icon:'📋' },
+];
+const adminNav = [
+  { id:'admin-templates', label:'模板管理', icon:'📦' },
+  { id:'admin-instances', label:'实例管理', icon:'📋' },
+  { id:'admin-permissions', label:'权限管理', icon:'🔐' },
+  { id:'admin-ops', label:'运维中心', icon:'📊' },
+];
+
+function renderNav() {
+  const tabs = currentRole === ROLE_ADMIN ? adminNav : userNav;
+  document.getElementById('navTabs').innerHTML = tabs.map(t =>
+    `<button class="nav-tab${currentPage===t.id?' active':''}" onclick="navigate('${t.id}')">${t.icon} ${t.label}</button>`
+  ).join('');
+}
+
+// ── Toast ──────────────────
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Role toggle ──────────────────
+function toggleRole() {
+  currentRole = currentRole === ROLE_USER ? ROLE_ADMIN : ROLE_USER;
+  const badge = document.getElementById('roleBadge');
+  const avatar = document.getElementById('userAvatar');
+  const nameEl = document.getElementById('userName');
+  if (currentRole === ROLE_ADMIN) {
+    badge.textContent = '管理员'; badge.className = 'role-badge admin';
+    avatar.textContent = '管'; nameEl.textContent = '管理员';
+    currentPage = 'admin-templates';
+  } else {
+    badge.textContent = '普通用户'; badge.className = 'role-badge';
+    avatar.textContent = '张'; nameEl.textContent = '张三';
+    currentPage = 'template-market';
+  }
+  navigate(currentPage);
+}
+
+// ── Navigation ──────────────────
+function navigate(pageId, params) {
+  currentPage = pageId;
+  renderNav();
+  const main = document.getElementById('mainContent');
+  switch(pageId) {
+    case 'template-market': renderTemplateMarket(main); break;
+    case 'my-instances': renderMyInstances(main); break;
+    case 'create-instance': renderCreateInstance(main, params); break;
+    case 'instance-detail': renderInstanceDetail(main, params); break;
+    case 'admin-templates': renderAdminTemplates(main); break;
+    case 'admin-instances': renderAdminInstances(main); break;
+    case 'admin-permissions': renderAdminPermissions(main); break;
+    case 'admin-ops': renderAdminOps(main); break;
+    default: renderTemplateMarket(main);
+  }
+  window.scrollTo(0,0);
+  closeDrawer();
+}
+
+// ── Drawer ──────────────────
+function openDrawer(content) {
+  document.getElementById('drawer').innerHTML = content;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+// ── Toggle switch logic ──────────────────
+function handleToggle(instanceId, newState) {
+  const inst = instances.find(i => i.id === instanceId);
+  if (!inst) return;
+  if (inst.status !== 'running' && inst.status !== 'stopped') {
+    showToast('仅运行中/已停用状态的实例可操作启停', 'warning');
+    return false;
+  }
+  inst.status = newState ? 'running' : 'stopped';
+  showToast(newState ? '实例已启用' : '实例已停用');
+  return true;
+}
+
+// ════════════════════════════════════════ PAGES ════════════════════════════════════════
+
+// ── 4.1 模板市场 ──────────────────
+function renderTemplateMarket(main) {
+  const enabledTemplates = templates.filter(t => t.status === 'enabled');
+  main.innerHTML = `
+    <div class="page-title">智能体模板市场</div>
+    <div class="subtitle">选择模板，快速创建您的智能体实例</div>
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="搜索模板名称..." oninput="filterTemplateCards(this.value)">
+      </div>
+      <select class="filter-select" onchange="filterTemplateCards(this.value, 'category')">
+        <option value="">分类：全部</option>
+        <option value="对话">对话</option>
+        <option value="开发">开发</option>
+        <option value="数据">数据</option>
+        <option value="办公">办公</option>
+      </select>
+    </div>
+    <div class="card-grid" id="templateGrid">
+      ${enabledTemplates.map(t => `
+        <div class="card" data-name="${t.name}" data-category="${t.category}" onclick="navigate('create-instance', {templateId:'${t.id}'})">
+          <div class="card-header">
+            <div class="card-title">🤖 ${t.name}</div>
+          </div>
+          <div class="card-desc">${t.desc}</div>
+          <div class="skill-tags">${t.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+          <div style="margin-top:auto;">
+            <button class="btn btn-primary btn-sm" style="width:100%;" onclick="event.stopPropagation(); navigate('create-instance', {templateId:'${t.id}'})">使用此模板 →</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="pagination">共 ${enabledTemplates.length} 个模板</div>
+  `;
+}
+
+function filterTemplateCards(val, type) {
+  const cards = document.querySelectorAll('#templateGrid .card');
+  cards.forEach(c => {
+    let show = true;
+    if (type === 'category' && val) show = c.dataset.category === val;
+    else if (!type && val) show = c.dataset.name.toLowerCase().includes(val.toLowerCase());
+    c.style.display = show ? '' : 'none';
+  });
+}
+
+// ── 4.2 我的实例 ──────────────────
+function renderMyInstances(main) {
+  const myInstances = instances.filter(i => i.userId === 'zhangsan');
+  main.innerHTML = `
+    <div class="page-title">我的智能体实例</div>
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="搜索实例名称..." oninput="filterInstanceCards(this.value)">
+      </div>
+    </div>
+    <div class="card-grid" id="instanceGrid">
+      ${myInstances.map(i => `
+        <div class="card" data-name="${i.name}" onclick="navigate('instance-detail', {instanceId:'${i.id}'})">
+          <div class="card-header">
+            ${statusBadge(i.status)}
+            <button class="toggle ${i.status==='running'?'on':''}" onclick="event.stopPropagation(); toggleMyInstance('${i.id}', this)" ${(i.status!=='running'&&i.status!=='stopped')?'disabled style=opacity:.5;pointer-events:none':''}></button>
+          </div>
+          <div class="card-title">${i.name}</div>
+          <div class="card-desc">${i.desc.substring(0,50)}...</div>
+          <div class="skill-tags">${i.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+          <div class="card-time">创建于 ${i.createdAt.split(' ')[0]}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="pagination">第 1/1 页 · &lt; 1 &gt;</div>
+  `;
+}
+
+function toggleMyInstance(id, btn) {
+  const inst = instances.find(i => i.id === id);
+  if (!inst) return;
+  if (inst.status === 'running') { inst.status = 'stopped'; btn.classList.remove('on'); showToast('实例已停用'); }
+  else if (inst.status === 'stopped') { inst.status = 'running'; btn.classList.add('on'); showToast('实例已启用'); }
+  btn.parentElement.parentElement.querySelector('.status').outerHTML = statusBadge(inst.status);
+}
+
+function filterInstanceCards(val) {
+  document.querySelectorAll('#instanceGrid .card').forEach(c => {
+    c.style.display = c.dataset.name.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ── 4.3 创建实例 ──────────────────
+function renderCreateInstance(main, params) {
+  const tpl = templates.find(t => t.id === (params?.templateId || 'T001'));
+  if (!tpl) return navigate('template-market');
+  main.innerHTML = `
+    <button class="back-link" onclick="navigate('template-market')">← 返回模板列表</button>
+    <div class="page-title">创建智能体实例</div>
+    <div class="detail-block">
+      <div class="form-group">
+        <label>所选模板</label>
+        <div class="template-preview">
+          <div class="tp-icon">🤖</div>
+          <div>
+            <div class="tp-name">${tpl.name}</div>
+            <div class="tp-desc">${tpl.desc}</div>
+            <div class="skill-tags" style="margin-top:6px;">${tpl.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>实例名称 <span class="required">*</span></label>
+        <input type="text" id="instName" placeholder='请输入实例名称，如"我的代码助手"' maxlength="50" oninput="validateCreateForm()">
+        <div class="hint">最多50字符，允许中文/英文/数字/下划线/中划线</div>
+        <div class="field-error" id="nameError"></div>
+      </div>
+      <div class="form-group">
+        <label>实例描述</label>
+        <textarea id="instDesc" placeholder="请输入实例描述，简要说明用途..." maxlength="200" oninput="document.getElementById('descCount').textContent=this.value.length"></textarea>
+        <div class="hint"><span id="descCount">0</span>/200</div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="navigate('template-market')">取消</button>
+        <button class="btn btn-primary btn-lg" id="createBtn" onclick="createInstance('${tpl.id}')">创建</button>
+      </div>
+    </div>
+  `;
+}
+
+function validateCreateForm() {
+  const name = document.getElementById('instName').value;
+  const err = document.getElementById('nameError');
+  const btn = document.getElementById('createBtn');
+  err.style.display = 'none';
+  if (!name) { btn.disabled = false; return; }
+  if (name.length > 50) { err.textContent = '实例名称不能超过50字符'; err.style.display = 'block'; btn.disabled = true; return; }
+  if (!/^[一-龥a-zA-Z0-9_\-]*$/.test(name)) { err.textContent = '实例名称只允许中文、英文、数字、下划线、中划线'; err.style.display = 'block'; btn.disabled = true; return; }
+  btn.disabled = false;
+}
+
+function createInstance(templateId) {
+  const name = document.getElementById('instName').value.trim();
+  const desc = document.getElementById('instDesc').value.trim();
+  if (!name) {
+    document.getElementById('nameError').textContent = '请输入实例名称';
+    document.getElementById('nameError').style.display = 'block';
+    return;
+  }
+  const tpl = templates.find(t => t.id === templateId);
+  const newInst = {
+    id: 'A' + String(instances.length + 1).padStart(3, '0'),
+    name, userId:'zhangsan', userName:'张三', template: tpl.name,
+    env:'生产', status:'review', skills: [...tpl.skills],
+    desc: desc || '暂无描述', createdAt: new Date().toISOString().replace('T',' ').substring(0,16),
+    updatedAt: new Date().toISOString().replace('T',' ').substring(0,16),
+    cpu:0, mem:0, inputToken:0, outputToken:0, totalToken:0, reviewComment:''
+  };
+  instances.unshift(newInst);
+  showToast('创建成功！实例已提交审核，自动发起飞书审批');
+  setTimeout(() => navigate('instance-detail', { instanceId: newInst.id }), 800);
+}
+
+// ── 4.4 实例详情 ──────────────────
+function renderInstanceDetail(main, params) {
+  const inst = instances.find(i => i.id === (params?.instanceId || 'A001'));
+  if (!inst) return navigate('my-instances');
+  const canToggle = inst.status === 'running' || inst.status === 'stopped';
+  const canChat = inst.status === 'running';
+  const isReview = inst.status === 'review';
+  const isRejected = inst.status === 'rejected';
+  const isRunning = inst.status === 'running';
+
+  main.innerHTML = `
+    <button class="back-link" onclick="navigate('my-instances')">← 返回实例列表</button>
+    <div class="detail-header-row">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="page-title" style="margin-bottom:0;">${inst.name}</div>
+        ${statusBadge(inst.status)}
+      </div>
+      <div class="detail-actions">
+        ${isRunning ? `<button class="btn btn-outline btn-sm" onclick="doStopInstance('${inst.id}')">⏸ 停用</button>` : ''}
+        ${inst.status==='stopped' ? `<button class="btn btn-primary btn-sm" onclick="doStartInstance('${inst.id}')">▶ 启用</button>` : ''}
+        ${canChat ? `<button class="btn btn-primary btn-sm">💬 进入对话</button>` : ''}
+      </div>
+    </div>
+
+    <div class="detail-block">
+      <h3>📝 描述</h3>
+      <p style="font-size:14px;color:#475569;">${inst.desc}</p>
+    </div>
+
+    <div class="detail-block">
+      <h3>📦 技能</h3>
+      <div class="skill-tags">${inst.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;">
+        <div class="detail-item"><div class="dlabel">所属模板</div><div class="dvalue">${inst.template}</div></div>
+        <div class="detail-item"><div class="dlabel">所属环境</div><div class="dvalue">${inst.env}环境</div></div>
+        <div class="detail-item"><div class="dlabel">创建时间</div><div class="dvalue">${inst.createdAt}</div></div>
+        <div class="detail-item"><div class="dlabel">最近更新</div><div class="dvalue">${inst.updatedAt}</div></div>
+      </div>
+    </div>
+
+    ${isRejected ? `
+    <div class="detail-block" style="border-left:4px solid #ef4444;">
+      <h3>📋 审核意见</h3>
+      <p style="font-size:14px;color:#991b1b;">${inst.reviewComment}</p>
+    </div>
+    ` : ''}
+
+    <div class="detail-block">
+      <h3>📊 使用统计（近7天）</h3>
+      <div class="stat-mini-cards">
+        <div class="stat-mini"><div class="sval">${inst.inputToken.toLocaleString()}</div><div class="slbl">输入 Token</div></div>
+        <div class="stat-mini"><div class="sval">${inst.outputToken.toLocaleString()}</div><div class="slbl">输出 Token</div></div>
+        <div class="stat-mini"><div class="sval">${inst.totalToken.toLocaleString()}</div><div class="slbl">总 Token</div></div>
+      </div>
+    </div>
+  `;
+}
+
+function doStopInstance(id) {
+  const inst = instances.find(i => i.id === id);
+  if (inst && inst.status === 'running') { inst.status = 'stopped'; showToast('实例已停用'); navigate('instance-detail', {instanceId:id}); }
+}
+function doStartInstance(id) {
+  const inst = instances.find(i => i.id === id);
+  if (inst && inst.status === 'stopped') { inst.status = 'running'; showToast('实例已启用'); navigate('instance-detail', {instanceId:id}); }
+}
+
+// ── 4.5 管理端 - 模板管理 ──────────────────
+function renderAdminTemplates(main) {
+  main.innerHTML = `
+    <div class="page-title">智能体模板管理</div>
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="搜索模板名称..." oninput="filterAdminTemplateTable(this.value)">
+      </div>
+      <select class="filter-select" onchange="filterAdminTemplateTable(this.value,'status')">
+        <option value="">状态：全部</option>
+        <option value="enabled">启用</option>
+        <option value="disabled">停用</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>名称</th><th>描述</th><th>状态</th><th>创建时间</th></tr></thead>
+        <tbody id="adminTemplateTableBody">
+          ${templates.map(t => `
+            <tr data-name="${t.name}" data-status="${t.status}">
+              <td style="font-weight:600;">${t.name}</td>
+              <td style="max-width:400px;">${t.desc}</td>
+              <td>${t.status==='enabled'?'<span class="status running"><span class="status-dot"></span>启用</span>':'<span class="status stopped"><span class="status-dot"></span>停用</span>'}</td>
+              <td>${t.createdAt}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">共 ${templates.length} 条 · &lt; 1 &gt;</div>
+  `;
+}
+
+function filterAdminTemplateTable(val, type) {
+  document.querySelectorAll('#adminTemplateTableBody tr').forEach(row => {
+    let show = true;
+    if (type === 'status' && val) show = row.dataset.status === val;
+    else if (!type && val) show = row.dataset.name.toLowerCase().includes(val.toLowerCase());
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+// ── 4.6 管理端 - 实例管理 ──────────────────
+function renderAdminInstances(main) {
+  main.innerHTML = `
+    <div class="page-title">智能体实例管理</div>
+    <div class="toolbar">
+      <div class="search-box" style="max-width:300px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="搜索ID/名称/用户..." oninput="filterAdminInstanceTable(this.value)">
+      </div>
+      <select class="filter-select" onchange="filterAdminInstanceTable(this.value,'status')">
+        <option value="">状态：全部</option>
+        <option value="review">审核中</option>
+        <option value="passed">已通过</option>
+        <option value="rejected">已拒绝</option>
+        <option value="running">运行中</option>
+        <option value="stopped">已停用</option>
+      </select>
+      <select class="filter-select" onchange="filterAdminInstanceTable(this.value,'env')">
+        <option value="">环境：全部</option>
+        <option value="生产">生产</option>
+        <option value="测试">测试</option>
+        <option value="开发">开发</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>名称</th><th>用户</th><th>模板</th><th>环境</th><th>状态</th><th>启用</th><th>操作</th></tr></thead>
+        <tbody id="adminInstanceTableBody">
+          ${instances.map(i => `
+            <tr data-name="${i.name}" data-user="${i.userName}" data-status="${i.status}" data-env="${i.env}" data-id="${i.id}">
+              <td style="font-family:monospace;font-size:12px;">${i.id}</td>
+              <td style="font-weight:500;">${i.name}</td>
+              <td>${i.userName}</td>
+              <td>${i.template}</td>
+              <td>${i.env}</td>
+              <td>${statusBadge(i.status)}</td>
+              <td><button class="toggle ${i.status==='running'?'on':''}" onclick="adminToggleInstance('${i.id}', this)" ${(i.status!=='running'&&i.status!=='stopped')?'disabled style=opacity:.5;pointer-events:none':''}></button></td>
+              <td><button class="btn btn-outline btn-sm" onclick="openInstanceDrawer('${i.id}')">查看</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">共 ${instances.length} 条 · &lt; 1 &gt;</div>
+  `;
+}
+
+function adminToggleInstance(id, btn) {
+  const inst = instances.find(i => i.id === id);
+  if (!inst) return;
+  if (inst.status === 'running') { inst.status = 'stopped'; btn.classList.remove('on'); showToast('实例已停用'); }
+  else if (inst.status === 'stopped') { inst.status = 'running'; btn.classList.add('on'); showToast('实例已启用'); }
+  const statusCell = btn.closest('tr').querySelector('td:nth-child(6)');
+  statusCell.innerHTML = statusBadge(inst.status);
+}
+
+function openInstanceDrawer(id) {
+  const inst = instances.find(i => i.id === id);
+  if (!inst) return;
+  const cpuWarn = inst.cpu > 80 ? 'warn' : 'normal';
+  const memWarn = inst.mem > 1638 ? 'warn' : 'normal';
+  openDrawer(`
+    <div class="drawer-header">
+      <h3>实例概览</h3>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="font-size:18px;font-weight:700;">${inst.name}</div>
+        ${statusBadge(inst.status)}
+      </div>
+      <div class="drawer-section">
+        <p style="font-size:14px;color:#475569;">描述：${inst.desc}</p>
+      </div>
+      <div class="drawer-section">
+        <h4>技能</h4>
+        <div class="skill-tags">${inst.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+      </div>
+      <div class="drawer-section">
+        <div class="drawer-info-row"><span class="label">所属环境</span><span class="value">${inst.env}环境</span></div>
+        <div class="drawer-info-row"><span class="label">所属用户</span><span class="value">${inst.userName}</span></div>
+        <div class="drawer-info-row"><span class="label">创建时间</span><span class="value">${inst.createdAt}</span></div>
+        <div class="drawer-info-row"><span class="label">最近更新</span><span class="value">${inst.updatedAt}</span></div>
+      </div>
+      <div class="drawer-section">
+        <h4>运行状态（当天）</h4>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px;">
+          <div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:4px;">CPU 使用率</div>
+            <div style="font-weight:700;font-size:18px;">${inst.cpu}%</div>
+            <div style="font-size:12px;color:#94a3b8;">${inst.cpu>0?`${(inst.cpu*0.02).toFixed(1)}/2 Core`:'--'}</div>
+            <div class="progress-bar" style="margin-top:4px;"><div class="fill ${cpuWarn}" style="width:${inst.cpu}%"></div></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:4px;">内存占用</div>
+            <div style="font-weight:700;font-size:18px;">${inst.mem}MB</div>
+            <div style="font-size:12px;color:#94a3b8;">${inst.mem>0?`${(inst.mem/1024).toFixed(1)}GB / 2GB`:'--'}</div>
+            <div class="progress-bar" style="margin-top:4px;"><div class="fill ${memWarn}" style="width:${inst.mem/2048*100}%"></div></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;">
+          <div class="stat-mini"><div class="sval" style="font-size:18px;">${inst.inputToken.toLocaleString()}</div><div class="slbl">输入 Token</div></div>
+          <div class="stat-mini"><div class="sval" style="font-size:18px;">${inst.outputToken.toLocaleString()}</div><div class="slbl">输出 Token</div></div>
+          <div class="stat-mini"><div class="sval" style="font-size:18px;">${inst.totalToken.toLocaleString()}</div><div class="slbl">总 Token</div></div>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function filterAdminInstanceTable(val, type) {
+  document.querySelectorAll('#adminInstanceTableBody tr').forEach(row => {
+    let show = true;
+    if (type === 'status' && val) show = row.dataset.status === val;
+    else if (type === 'env' && val) show = row.dataset.env === val;
+    else if (!type && val) {
+      const q = val.toLowerCase();
+      show = row.dataset.id.toLowerCase().includes(q) || row.dataset.name.toLowerCase().includes(q) || row.dataset.user.toLowerCase().includes(q);
+    }
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+// ── 4.7 管理端 - 权限管理 ──────────────────
+function renderAdminPermissions(main) {
+  main.innerHTML = `
+    <div class="page-title">权限管理</div>
+    <div class="toolbar">
+      <div class="search-box" style="max-width:320px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="搜索用户名或部门..." oninput="filterPermissionTable(this.value)">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>用户名</th><th>部门</th><th>当前角色</th></tr></thead>
+        <tbody id="permissionTableBody">
+          ${users.map(u => `
+            <tr data-name="${u.username}" data-dept="${u.dept}">
+              <td style="font-weight:500;">${u.username}</td>
+              <td>${u.dept}</td>
+              <td>${u.role==='管理员角色'?'<span style="color:#b45309;font-weight:600;">👑 管理员角色</span>':'<span style="color:#475569;">👤 普通用户角色</span>'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">共 ${users.length} 条 · &lt; 1 &gt;</div>
+    <div style="margin-top:16px;padding:12px;background:#fef3c7;border-radius:8px;font-size:13px;color:#92400e;">
+      ⚠️ 角色信息仅支持查看，角色的创建、编辑、删除属于二期功能
+    </div>
+  `;
+}
+
+function filterPermissionTable(val) {
+  const q = val.toLowerCase();
+  document.querySelectorAll('#permissionTableBody tr').forEach(row => {
+    row.style.display = (row.dataset.name.toLowerCase().includes(q) || row.dataset.dept.toLowerCase().includes(q)) ? '' : 'none';
+  });
+}
+
+// ── 4.8 管理端 - 运维中心 ──────────────────
+let opsRefreshInterval = null;
+
+function renderAdminOps(main) {
+  const running = instances.filter(i => i.status === 'running').length;
+  const stopped = instances.filter(i => i.status === 'stopped').length;
+  const total = instances.length;
+
+  main.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div class="page-title" style="margin-bottom:0;">运维中心</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#64748b;">
+        🔄 自动刷新 (30s)
+        <span id="refreshCountdown" style="font-weight:600;color:#2563eb;">30</span>s
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card" style="text-align:center;">
+        <div class="stat-label">📦 实例总数</div>
+        <div class="stat-value" id="statTotal">${total}</div>
+      </div>
+      <div class="stat-card" style="text-align:center;">
+        <div class="stat-label">● 运行中</div>
+        <div class="stat-value" style="color:#16a34a;" id="statRunning">${running}</div>
+      </div>
+      <div class="stat-card" style="text-align:center;">
+        <div class="stat-label">⏸ 已停用</div>
+        <div class="stat-value" style="color:#6b7280;" id="statStopped">${stopped}</div>
+      </div>
+    </div>
+
+    <div style="font-weight:600;font-size:16px;margin-bottom:12px;">Token 消耗统计（按天）</div>
+    <div class="table-wrap" style="margin-bottom:24px;">
+      <table>
+        <thead><tr><th>实例 ID</th><th>输入 Token</th><th>输出 Token</th><th>总量 Token</th><th>趋势</th></tr></thead>
+        <tbody>
+          ${tokenData.map(t => `
+            <tr>
+              <td style="font-family:monospace;font-size:12px;">${t.id}</td>
+              <td>${t.inputToken.toLocaleString()}</td>
+              <td>${t.outputToken.toLocaleString()}</td>
+              <td style="font-weight:600;">${t.totalToken.toLocaleString()}</td>
+              <td><span class="trend-${t.trend}">${t.trend==='up'?'▲':t.trend==='down'?'▼':'●'} ${t.trendPct}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination" style="justify-content:flex-end;padding:0;margin:-16px 0 24px;">共 ${tokenData.length} 条 · &lt; 1 &gt;</div>
+
+    <div style="font-weight:600;font-size:16px;margin-bottom:12px;">资源监控（实时）</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>实例 ID</th><th>CPU 使用率</th><th>内存使用量</th><th>状态</th></tr></thead>
+        <tbody>
+          ${resourceData.map(r => `
+            <tr>
+              <td style="font-family:monospace;font-size:12px;">${r.id}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="progress-bar" style="flex:1;min-width:80px;"><div class="fill ${r.cpu>80?'danger':r.cpu>60?'warn':'normal'}" style="width:${r.cpu}%"></div></div>
+                  <span style="font-weight:600;white-space:nowrap;">${r.cpu}%</span>
+                </div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${r.cpuCore}</div>
+              </td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="progress-bar" style="flex:1;min-width:80px;"><div class="fill ${r.mem>1638?'danger':r.mem>1200?'warn':'normal'}" style="width:${r.mem/2048*100}%"></div></div>
+                  <span style="font-weight:600;white-space:nowrap;">${r.mem>=1024?(r.mem/1024).toFixed(1)+'GB':r.mem+'MB'}</span>
+                </div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${r.memTotal}</div>
+              </td>
+              <td>${r.status==='warn'?'<span style="color:#d97706;font-weight:600;">⚠ 偏高</span>':'<span style="color:#16a34a;">● 正常</span>'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination" style="justify-content:flex-end;padding:0;margin-top:16px;">共 ${resourceData.length} 条 · &lt; 1 &gt;</div>
+  `;
+
+  // Simulated countdown
+  let countdown = 30;
+  if (opsRefreshInterval) clearInterval(opsRefreshInterval);
+  opsRefreshInterval = setInterval(() => {
+    countdown--;
+    const el = document.getElementById('refreshCountdown');
+    if (el) el.textContent = countdown;
+    if (countdown <= 0) countdown = 30;
+  }, 1000);
+}
+
+// ── Helpers ──────────────────
+function statusBadge(s) {
+  const map = {
+    review: ['审核中','review'],
+    passed: ['已通过','passed'],
+    rejected: ['已拒绝','rejected'],
+    running: ['运行中','running'],
+    stopped: ['已停用','stopped'],
+  };
+  const [label, cls] = map[s] || ['未知','stopped'];
+  return `<span class="status ${cls}"><span class="status-dot"></span>${label}</span>`;
+}
+
+// ── Init ──────────────────
+navigate('template-market');
+</script>
+</body>
+</html>
